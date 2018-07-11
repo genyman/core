@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<IsPackable>true</IsPackable>
+		<TargetFramework>netcoreapp2.1</TargetFramework>
+		<LangVersion>7.1</LangVersion>
+		<Version>0.0.1</Version>
+		<PackageId>Genyman.Core</PackageId>
+		<Title>Genyman Core Library</Title>
+		<PackageProjectUrl>https://genyman.net</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/genyman/genyman</RepositoryUrl>
+		<Authors>Genyman</Authors>
+		<Description>Genyman Core Library</Description>
+		<PackageTags>Genyman</PackageTags>
+		<PackageIconUrl>https://raw.githubusercontent.com/genyman/genyman/master/graphics/genyman64.png</PackageIconUrl>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Handlebars.Net" Version="1.9.5"/>
+		<PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.2.4"/>
+		<PackageReference Include="ServiceStack.Text" Version="5.1.0"/>
+	</ItemGroup>
+</Project>
