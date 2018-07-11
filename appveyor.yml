@@ -1,0 +1,37 @@
+version: 0.0.{build}
+branches:
+  only:
+  - master
+only_commits:
+  files:
+  - src/**/*
+skip_tags: true
+image: Visual Studio 2017
+dotnet_csproj:
+  patch: true
+  file: src\cli\Genyman.Cli.csproj;src\core\Genyman.Core.csproj
+  version: '{version}'
+environment:
+  nuget_apikey:
+    secure: Rr0YSZywAbooGsEIPuSZvcUcH23xE+1qNYcRoYDDoyiKPXNPGrU7b4EbHQxT4NO4
+build_script:
+- cmd: >-
+    cd .\src\cli
+
+    dotnet pack -c release -o .\
+
+    dotnet nuget push *.nupkg -k %nuget_apikey% -s https://api.nuget.org/v3/index.json
+
+    cd ..\core
+
+    dotnet pack -c release -o .\
+
+    dotnet nuget push *.nupkg -k %nuget_apikey% -s https://api.nuget.org/v3/index.json
+artifacts:
+- path: '**\*.nupkg'
+  name: Nupkg
+deploy:
+- provider: GitHub
+  auth_token:
+    secure: Srl9QCbPHA1akUIjkceL5rFA3TqWks3JoOxWHU74tv+l9aK0+CZ2YeStsAb0e1L1
+  artifact: /.*\.nupkg/
