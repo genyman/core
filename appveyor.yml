@@ -6,26 +6,20 @@ only_commits:
   files:
   - src/**/*
 skip_tags: true
-image: Visual Studio 2017
+image: Visual Studio 2017  
 dotnet_csproj:
   patch: true
-  file: src\cli\Genyman.Cli.csproj;src\core\Genyman.Core.csproj
+  file: '**\*.csproj'
   version: '{version}'
 environment:
   nuget_apikey:
-    secure: Rr0YSZywAbooGsEIPuSZvcUcH23xE+1qNYcRoYDDoyiKPXNPGrU7b4EbHQxT4NO4
+    secure: Rr0YSZywAbooGsEIPuSZvcUcH23xE+1qNYcRoYDDoyiKPXNPGrU7b4EbHQxT4NO4  
 build_script:
 - cmd: >-
-    cd .\src\cli
+    cd .\src
 
     dotnet pack -c release -o .\
-
-    dotnet nuget push *.nupkg -k %nuget_apikey% -s https://api.nuget.org/v3/index.json
-
-    cd ..\core
-
-    dotnet pack -c release -o .\
-
+    
     dotnet nuget push *.nupkg -k %nuget_apikey% -s https://api.nuget.org/v3/index.json
 artifacts:
 - path: '**\*.nupkg'
