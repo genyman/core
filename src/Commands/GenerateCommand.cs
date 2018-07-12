@@ -71,9 +71,24 @@ namespace Genyman.Core.Commands
 			var sw = Stopwatch.StartNew();
 			Log.Information($"Executing {generator.Metadata.PackageId} - Version {generator.Metadata.Version}");
 			generator.Execute();
-			Log.Information($"Finished ({sw.ElapsedMilliseconds}ms)");
-
+			var elapsed = sw.ElapsedMilliseconds;
+			Log.Information($"Finished ({elapsed}ms)");
+			
+			// telemetry
+			if (metaData.PackageId != "Genyman")
+			{
+				const string telemetryUrl = "https://cmgg8m1ib1.execute-api.us-east-2.amazonaws.com/genyman";
+				telemetryUrl.PostJsonToUrl(new Telemetry() {Name = metaData.PackageId, Version = metaData.Version, Duration = elapsed});
+			}
+			
 			return 0;
+		}
+
+		class Telemetry
+		{
+			public string Name { get; set; }
+			public string Version { get; set; }
+			public long Duration { get; set; }
 		}
 	}
 }
