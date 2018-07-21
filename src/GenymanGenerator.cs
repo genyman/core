@@ -57,6 +57,7 @@ namespace Genyman.Core
 				targetPath.EnsureFolderExists();
 
 				FluentHandlebars.Create(this)
+					.WithAllHelpers()
 					.HavingModel(Configuration)
 					.UsingFileTemplate(templateFile)
 					.OutputFile(targetPath, Overwrite);
