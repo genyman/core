@@ -13,7 +13,7 @@ namespace Genyman.Core
 			PackageId = assemblyName.Name;
 			NugetSource = "";
 
-			Description = calling.GetCustomAttribute<AssemblyDescriptionAttribute>().Description;
+			Description = calling.GetCustomAttribute<AssemblyDescriptionAttribute>()?.Description;
 		}
 
 		public string PackageId { get; set; }
