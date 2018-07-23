@@ -18,7 +18,7 @@ namespace Genyman.Core
 
 		public string WorkingDirectory { get; internal set; }
 		
-		public bool Overwrite { get; internal set; }
+		public bool Overwrite { get; set; }
 
 		protected string TemplatePath { get; }
 
