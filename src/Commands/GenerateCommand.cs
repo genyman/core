@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using Genyman.Core.Serializers;
 using McMaster.Extensions.CommandLineUtils;
 using ServiceStack;
@@ -65,12 +66,16 @@ namespace Genyman.Core.Commands
 				Metadata = metaData,
 				Overwrite = Overwrite.HasValue()
 			};
+			
+			var calling = Assembly.GetEntryAssembly(); 
+			var assemblyName = calling.GetName(); 
+			var version = $"{assemblyName.Version.Major}.{assemblyName.Version.Minor}.{assemblyName.Version.Build}"; 
 
 			var sw = Stopwatch.StartNew();
-			Log.Information($"Executing {generator.Metadata.PackageId} - Version {generator.Metadata.Version}");
+			Log.Information($"Executing {generator.Metadata.PackageId} - Version {version}");
 			generator.Execute();
 			var elapsed = sw.ElapsedMilliseconds;
-			Log.Information($"Finished ({elapsed}ms)");
+			Log.Information($"Finished {generator.Metadata.PackageId} ({elapsed}ms)");
 
 			// telemetry
 			if (metaData.PackageId.ToLower() != "genyman")
