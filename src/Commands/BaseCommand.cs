@@ -1,4 +1,5 @@
-﻿using McMaster.Extensions.CommandLineUtils;
+﻿using System.Reflection;
+using McMaster.Extensions.CommandLineUtils;
 
 namespace Genyman.Core.Commands
 {
@@ -24,6 +25,14 @@ namespace Genyman.Core.Commands
 			if (Diagnostic.HasValue()) Log.Verbosity = Verbosity.Diagnostic;
 			if (Quiet.HasValue()) Log.Verbosity = Verbosity.Quiet;
 			return 0;
+		}
+		
+		protected static string GetVersion()
+		{
+			var calling = Assembly.GetEntryAssembly();
+			var assemblyName = calling.GetName();
+			var version = $"{assemblyName.Version.Major}.{assemblyName.Version.Minor}.{assemblyName.Version.Build}";
+			return version;
 		}
 	}
 }

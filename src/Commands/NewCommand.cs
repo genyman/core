@@ -55,8 +55,9 @@ namespace Genyman.Core.Commands
 			}
 
 			var metadata = new GenymanMetadata();
+			var version = GetVersion();
 
-			Log.Information($"Executing new command of {metadata.PackageId} - Version {metadata.Version}");
+			Log.Information($"Executing new command of {metadata.PackageId} - Version {version}");
 
 			var sw = Stopwatch.StartNew();
 

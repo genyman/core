@@ -67,9 +67,7 @@ namespace Genyman.Core.Commands
 				Overwrite = Overwrite.HasValue()
 			};
 			
-			var calling = Assembly.GetEntryAssembly(); 
-			var assemblyName = calling.GetName(); 
-			var version = $"{assemblyName.Version.Major}.{assemblyName.Version.Minor}.{assemblyName.Version.Build}"; 
+			var version = GetVersion();
 
 			var sw = Stopwatch.StartNew();
 			Log.Information($"Executing {generator.Metadata.PackageId} - Version {version}");
@@ -86,6 +84,8 @@ namespace Genyman.Core.Commands
 
 			return 0;
 		}
+
+		
 
 		class Telemetry
 		{
