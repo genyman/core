@@ -38,7 +38,7 @@ namespace Genyman.Core
 			catch (Exception e)
 			{
 				Log.Debug(e.ToString());
-				Log.Fatal($"Fatal error; something went wrong.");
+				Log.Fatal($"Fatal error; something went wrong. Run again with --diagnostic for full details.");
 			}
 		}
 	}
