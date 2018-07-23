@@ -95,10 +95,21 @@ namespace Genyman.Core.Handlebars
 		{
 			if (fileName.Contains("{{"))
 			{
+				// trick handlebars on Windows file names
+				var escapeAvailable = false;
+				if (fileName.Contains("\\"))
+				{
+					escapeAvailable = true;
+					fileName = fileName.Replace("\\", "/");
+				}
+				
 				fileName = FluentHandlebars.Create(this)
 					.HavingModel(_model)
 					.UsingTemplate(fileName)
 					.OutputString();
+				
+				if (escapeAvailable)
+					fileName = fileName.Replace("/", "\\");
 			}
 			
 			var result = OutputString();
