@@ -18,14 +18,14 @@ namespace Genyman.Core.Commands
 			{
 			}, false);
 
-			FileNameOption = Option("--file", "Override filename for template (without extension)", CommandOptionType.SingleOrNoValue, option =>
+			FileNameOption = Option<string>("--file", "Override filename for template (without extension)", CommandOptionType.SingleValue, option =>
 			{
 				
 			}, false);
 		}
 
 		public CommandOption JsonOption { get; }
-		public CommandOption FileNameOption { get; }
+		public CommandOption<string> FileNameOption { get; }
 
 
 		protected override int Execute()
@@ -59,7 +59,7 @@ namespace Genyman.Core.Commands
 				extension = "json";
 			}
 
-			var fileName = !string.IsNullOrEmpty(FileNameOption.Value()) ? FileNameOption.Value() : $"gm-{metadata.Identifier.ToLower()}";
+			var fileName = !string.IsNullOrEmpty(FileNameOption.Value()) ? FileNameOption.ParsedValue : $"gm-{metadata.Identifier.ToLower()}";
 			fileName = $"{fileName}.{extension}";
 
 			var fullFileName = Path.Combine(Environment.CurrentDirectory, fileName);
