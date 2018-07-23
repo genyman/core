@@ -19,6 +19,7 @@ namespace Genyman.Core.Helpers
 			}
 			catch (Exception e)
 			{
+				Log.Error(e.ToString());
 				Log.Fatal($"Could not create folder {path}");
 			}
 
