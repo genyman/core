@@ -13,9 +13,7 @@ namespace Genyman.Core.Commands
 	{
 		public GenerateCommand()
 		{
-			ExtendedHelpText = "\nPowered by Genyman (https://genyman.net)\n";
-			
-
+			ExtendedHelpText = "\nPowered by Genyman (https://genyman.github.io/docs)\n";
 			Input = Argument<string>("input", "File to use for generation", argument => { });
 		}
 
@@ -35,7 +33,7 @@ namespace Genyman.Core.Commands
 				return -1;
 			}
 
-			var fileName = Input.Value;
+			var fileName = Input.ParsedValue;
 
 			if (!File.Exists(fileName))
 			{
@@ -73,14 +71,14 @@ namespace Genyman.Core.Commands
 			generator.Execute();
 			var elapsed = sw.ElapsedMilliseconds;
 			Log.Information($"Finished ({elapsed}ms)");
-			
+
 			// telemetry
-			if (metaData.PackageId != "Genyman")
+			if (metaData.PackageId.ToLower() != "genyman")
 			{
 				const string telemetryUrl = "https://cmgg8m1ib1.execute-api.us-east-2.amazonaws.com/genyman";
 				telemetryUrl.PostJsonToUrl(new Telemetry() {Name = metaData.PackageId, Version = metaData.Version, Duration = elapsed});
 			}
-			
+
 			return 0;
 		}
 
