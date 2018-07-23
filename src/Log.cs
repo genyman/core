@@ -4,6 +4,7 @@ namespace Genyman.Core
 {
 	public static class Log
 	{
+
 		public static void Debug(string message)
 		{
 			InternalWrite(LogLevel.Debug, message);
@@ -39,36 +40,18 @@ namespace Genyman.Core
 			var messages = message.Split(Environment.NewLine);
 			foreach (var line in messages)
 			{
-				var prefix = string.Empty;
-				if (Verbosity == Verbosity.Diagnostic)
-					prefix = $"[{LevelPrefix(level)}] ";
-				switch (level)
-				{
-					case LogLevel.Fatal:
-						Console.ForegroundColor = ConsoleColor.DarkRed;
-						break;
-					case LogLevel.Error:
-						Console.ForegroundColor = ConsoleColor.Red;
-						break;
-					case LogLevel.Warning:
-						Console.ForegroundColor = ConsoleColor.Yellow;
-						break;
-					case LogLevel.Information:
-						break;
-					case LogLevel.Debug:
-						Console.ForegroundColor = ConsoleColor.DarkGray;
-						break;
-				}
-
+				var prefix = $"{LevelPrefix(level, message)}: ";
 				Console.WriteLine($"{prefix}{line}");
-				Console.ResetColor();
 				if (level == LogLevel.Fatal)
 					Environment.Exit(-1);
 			}
 		}
 
-		static string LevelPrefix(LogLevel logLevel)
+		static string LevelPrefix(LogLevel logLevel, string message)
 		{
+			if (message.StartsWith("FTL") || message.StartsWith("ERR") || message.StartsWith("WRN") || message.StartsWith("INF") || message.StartsWith("DBG"))
+				return message;
+			
 			switch (logLevel)
 			{
 				case LogLevel.Fatal:
@@ -85,6 +68,7 @@ namespace Genyman.Core
 
 			return null;
 		}
+
 	}
 
 	public enum Verbosity
