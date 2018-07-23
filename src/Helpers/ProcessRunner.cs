@@ -11,6 +11,7 @@ namespace Genyman.Core.Helpers
 		readonly List<string> _arguments = new List<string>();
 		Func<string, bool> _receiveOutput;
 		readonly string _processPath = "";
+		bool _isGenerator = false;
 
 		ProcessRunner(string processPath)
 		{
@@ -20,6 +21,12 @@ namespace Genyman.Core.Helpers
 		public static ProcessRunner Create(string processPath)
 		{
 			_processRunner = new ProcessRunner(processPath);
+			return _processRunner;
+		}
+
+		public ProcessRunner IsGenerator()
+		{
+			_isGenerator = true;
 			return _processRunner;
 		}
 
@@ -72,35 +79,43 @@ namespace Genyman.Core.Helpers
 			}
 
 			if (process.ExitCode == 0)
-				RedirectOutput(process, false, _receiveOutput);
+				RedirectOutput(process, false, _isGenerator, _receiveOutput);
 			else
-				RedirectOutput(process, true, _receiveOutput);
+				RedirectOutput(process, true, _isGenerator, _receiveOutput);
 
 			return process.ExitCode;
 		}
 
-		static void RedirectOutput(Process process, bool asError, Func<string, bool> receiveOutput = null)
+		static void RedirectOutput(Process process, bool asError, bool isGenerator, Func<string, bool> receiveOutput = null)
 		{
 			var output = process.StandardOutput.ReadToEnd();
 			var error = process.StandardError.ReadToEnd();
 
-
-			var logOutput = true;
-			if (receiveOutput != null)
+			if (isGenerator)
 			{
-				logOutput = receiveOutput.Invoke(output);
+				Log.FromGenerator(output, error);
+			}
+			else
+			{
+				var logOutput = true;
+				if (receiveOutput != null)
+				{
+					logOutput = receiveOutput.Invoke(output);
+				}
+
+				if (logOutput)
+				{
+					if (!asError)
+						Log.Debug(output);
+					else
+						Log.Error(output);
+
+					if (!string.IsNullOrEmpty(error))
+						Log.Error(error);
+				}
 			}
 
-			if (logOutput)
-			{
-				if (!asError)
-					Log.Debug(output);
-				else
-					Log.Error(output);
-
-				if (!string.IsNullOrEmpty(error))
-					Log.Error(error);
-			}
+			
 		}
 	}
 }

@@ -40,17 +40,35 @@ namespace Genyman.Core
 			var messages = message.Split(Environment.NewLine);
 			foreach (var line in messages)
 			{
-				var prefix = $"{LevelPrefix(level, message)}: ";
+				if (string.IsNullOrEmpty(line)) continue;
+				
+				var prefix = $"{LevelPrefix(level)}: ";
 				Console.WriteLine($"{prefix}{line}");
 				if (level == LogLevel.Fatal)
 					Environment.Exit(-1);
 			}
 		}
 
-		static string LevelPrefix(LogLevel logLevel, string message)
+		internal static void FromGenerator(string messages, string errors)
 		{
-			if (message.StartsWith("FTL") || message.StartsWith("ERR") || message.StartsWith("WRN") || message.StartsWith("INF") || message.StartsWith("DBG"))
-				return message;
+			var lines = messages.Split(Environment.NewLine);
+			foreach (var line in lines)
+			{
+				if (string.IsNullOrEmpty(line)) continue;
+				Console.WriteLine(line);
+			}
+			
+			var errorLines = errors.Split(Environment.NewLine);
+			foreach (var line in errorLines)
+			{
+				if (string.IsNullOrEmpty(line)) continue;
+				Console.WriteLine(line);
+			}
+		}
+			
+
+		static string LevelPrefix(LogLevel logLevel)
+		{
 			
 			switch (logLevel)
 			{
