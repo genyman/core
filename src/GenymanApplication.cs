@@ -12,10 +12,10 @@ namespace Genyman.Core
 			where TTemplate : TConfiguration, new()
 			where TGenerator : GenymanGenerator<TConfiguration>, new()
 		{
-			Run<TConfiguration, TTemplate, TGenerator>(args, null);
+			Run<TConfiguration, TTemplate, TGenerator>(args, null, null);
 		}
 
-		internal static void Run<TConfiguration, TTemplate, TGenerator>(string[] args, Action<List<CommandLineApplication>> subCommands)
+		internal static void Run<TConfiguration, TTemplate, TGenerator>(string[] args, Action<List<CommandLineApplication>> subCommands, Func<int> newForPackageId)
 			where TConfiguration : class, new()
 			where TTemplate : TConfiguration, new()
 			where TGenerator : GenymanGenerator<TConfiguration>, new()
@@ -23,7 +23,7 @@ namespace Genyman.Core
 			// setup default generate command
 			var generateCommand = new GenerateCommand<TConfiguration, TGenerator>();
 			generateCommand.Conventions.UseDefaultConventions();
-			var newCommand = new NewCommand<TConfiguration, TTemplate>();
+			var newCommand = new NewCommand<TConfiguration, TTemplate>(newForPackageId != null) {NewForPackageId = newForPackageId};
 			generateCommand.Commands.Add(newCommand);
 			subCommands?.Invoke(generateCommand.Commands);
 			try

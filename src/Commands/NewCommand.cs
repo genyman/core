@@ -6,36 +6,58 @@ using McMaster.Extensions.CommandLineUtils;
 
 namespace Genyman.Core.Commands
 {
-	internal class NewCommand<TConfiguration, TTemplate> : BaseCommand
+	internal class NewCommand : BaseCommand
+	{
+		protected NewCommand(bool fromCli)
+		{
+			Name = "new";
+			Description = "Generates a confiration file for a generator";
+			JsonOption = Option("--json", "Output as json", CommandOptionType.NoValue, option => { }, false);
+			FileNameOption = Option<string>("--file", "Override filename for template (without extension)", CommandOptionType.SingleValue, option => { }, false);
+
+			if (fromCli)
+			{
+				SourceOption = Option<string>("--source", "Custom nuget server location for package", CommandOptionType.SingleValue, option => { }, false);
+				UpdateOption = Option("--update", "Perform update for package", CommandOptionType.NoValue, option => { }, false);
+
+				PackageIdArgument = Argument<string>("packageId",
+					"Optionally specify a packageId for which you want a new configuration file; if ommitted configuration file for a new generator is created.", argument => { });
+			}
+		}
+
+
+		protected CommandOption JsonOption { get; set; }
+		protected CommandOption<string> FileNameOption { get; set; }
+
+		protected CommandOption UpdateOption { get; set; }
+		protected CommandOption<string> SourceOption { get; set; }
+		protected CommandArgument<string> PackageIdArgument { get; set; }
+
+	}
+
+	internal class NewCommand<TConfiguration, TTemplate> : NewCommand
 		where TConfiguration : class
 		where TTemplate : TConfiguration, new()
 	{
-		public NewCommand()
+		internal Func<int> NewForPackageId { get; set; }
+
+		public NewCommand(bool fromCli) : base(fromCli)
 		{
-			Name = "new";
-			Description = "Generates a template for the generator";
-			JsonOption = Option("--json", "Output as json", CommandOptionType.NoValue, option =>
-			{
-			}, false);
-
-			FileNameOption = Option<string>("--file", "Override filename for template (without extension)", CommandOptionType.SingleValue, option =>
-			{
-				
-			}, false);
 		}
-
-		public CommandOption JsonOption { get; }
-		public CommandOption<string> FileNameOption { get; }
-
 
 		protected override int Execute()
 		{
 			base.Execute();
-			
+
+			if (NewForPackageId != null && !string.IsNullOrEmpty(PackageIdArgument.ParsedValue))
+			{
+				return NewForPackageId();
+			}
+
 			var metadata = new GenymanMetadata();
-			
+
 			Log.Information($"Executing new command of {metadata.PackageId} - Version {metadata.Version}");
-			
+
 			var sw = Stopwatch.StartNew();
 
 			var configuration = new GenymanConfiguration<TConfiguration>
@@ -71,7 +93,7 @@ namespace Genyman.Core.Commands
 
 			File.WriteAllText(fullFileName, output);
 			Log.Information($"Configuration file {fileName} was written");
-			
+
 			Log.Information($"Finished ({sw.ElapsedMilliseconds}ms)");
 
 			return 0;
