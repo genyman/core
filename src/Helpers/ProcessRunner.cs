@@ -37,7 +37,7 @@ namespace Genyman.Core.Helpers
 			return _processRunner;
 		}
 
-		public void Execute()
+		public int Execute()
 		{
 			var arguments = ArgumentEscaper.EscapeAndConcatenate(_arguments);
 
@@ -47,7 +47,7 @@ namespace Genyman.Core.Helpers
 				FileName = _processPath,
 				Arguments = arguments,
 				RedirectStandardOutput = true,
-				RedirectStandardError = true
+				RedirectStandardError = true,
 			};
 
 			Log.Debug($"Executing {_processPath}");
@@ -75,12 +75,15 @@ namespace Genyman.Core.Helpers
 				RedirectOutput(process, false, _receiveOutput);
 			else
 				RedirectOutput(process, true, _receiveOutput);
+
+			return process.ExitCode;
 		}
 
 		static void RedirectOutput(Process process, bool asError, Func<string, bool> receiveOutput = null)
 		{
 			var output = process.StandardOutput.ReadToEnd();
 			var error = process.StandardError.ReadToEnd();
+
 
 			var logOutput = true;
 			if (receiveOutput != null)
