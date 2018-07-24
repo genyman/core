@@ -12,6 +12,8 @@ namespace Genyman.Core.Helpers
 		Func<string, bool> _receiveOutput;
 		readonly string _processPath = "";
 		bool _isGenerator = false;
+		bool _useShellExecute = false;
+		string _pathEnvironmentVariable = null;
 
 		ProcessRunner(string processPath)
 		{
@@ -24,7 +26,7 @@ namespace Genyman.Core.Helpers
 			return _processRunner;
 		}
 
-		public ProcessRunner IsGenerator()
+		internal ProcessRunner IsGenerator()
 		{
 			_isGenerator = true;
 			return _processRunner;
@@ -35,6 +37,18 @@ namespace Genyman.Core.Helpers
 			_arguments.Add($"{argument}");
 			if (value != null)
 				_arguments.Add(value);
+			return _processRunner;
+		}
+
+		public ProcessRunner WithUseShellExecute()
+		{
+			_useShellExecute = true;
+			return _processRunner;
+		}
+
+		public ProcessRunner WithPathEnvironmentVariable(string pathEnvironmentVariable)
+		{
+			_pathEnvironmentVariable = pathEnvironmentVariable;
 			return _processRunner;
 		}
 
@@ -50,15 +64,26 @@ namespace Genyman.Core.Helpers
 
 			var processStartInfo = new ProcessStartInfo
 			{
-				UseShellExecute = false,
+				UseShellExecute = _useShellExecute,
 				FileName = _processPath,
 				Arguments = arguments,
 				RedirectStandardOutput = redirectOutput,
 				RedirectStandardError = redirectOutput,
 			};
 
+			if (!string.IsNullOrEmpty(_pathEnvironmentVariable))
+			{
+				if (processStartInfo.EnvironmentVariables.ContainsKey("PATH"))
+					processStartInfo.EnvironmentVariables["PATH"] = _pathEnvironmentVariable;
+				else
+					processStartInfo.EnvironmentVariables.Add("PATH", _pathEnvironmentVariable);
+			}
+
+			var pathVariable = processStartInfo.EnvironmentVariables.ContainsKey("PATH") ? processStartInfo.EnvironmentVariables["PATH"] : "No PATH environment variable found";
+
 			Log.Debug($"Executing {_processPath}");
 			Log.Debug($"Arguments: {arguments}");
+			Log.Debug($"Path: {pathVariable}");
 
 			var process = new Process
 			{
@@ -89,7 +114,7 @@ namespace Genyman.Core.Helpers
 		static void RedirectOutput(bool redirectOutput, Process process, bool asError, bool isGenerator, Func<string, bool> receiveOutput = null)
 		{
 			if (!redirectOutput) return;
-			
+
 			var output = process.StandardOutput.ReadToEnd();
 			var error = process.StandardError.ReadToEnd();
 
@@ -116,8 +141,6 @@ namespace Genyman.Core.Helpers
 						Log.Error(error);
 				}
 			}
-
-			
 		}
 	}
 }
