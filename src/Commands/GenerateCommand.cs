@@ -12,23 +12,31 @@ namespace Genyman.Core.Commands
 		where TConfiguration : class, new()
 		where TGenerator : GenymanGenerator<TConfiguration>, new()
 	{
-		public GenerateCommand()
+		public GenerateCommand(bool fromCli)
 		{
+			FromCli = fromCli;
 			ExtendedHelpText = "\nPowered by Genyman (https://genyman.github.io/docs)\n";
 			Input = Argument<string>("input", "File to use for generation", argument => { });
+			if (FromCli)
+			{
+				UpdateOption = Option("--update", "Perform update for package", CommandOptionType.NoValue, option => { }, false);
+			}
 		}
 
 		CommandArgument<string> Input { get; }
+		internal CommandOption UpdateOption { get; set; }
+		internal bool FromCli { get; set; }
 
 		protected override int Execute()
 		{
 			base.Execute();
 
 			var metaData = new GenymanMetadata();
+			var version = GetVersion();
 
 			if (Input.Value.IsNullOrEmpty())
 			{
-				Description = $"{metaData.Description} (Version {metaData.Version})";
+				Description = $"{metaData.Description} (Version {version})";
 				Name = metaData.Identifier.ToLower();
 				ShowHelp();
 				return -1;
@@ -67,7 +75,7 @@ namespace Genyman.Core.Commands
 				Overwrite = Overwrite.HasValue()
 			};
 			
-			var version = GetVersion();
+			
 
 			var sw = Stopwatch.StartNew();
 			Log.Information($"Executing {generator.Metadata.PackageId} - Version {version}");

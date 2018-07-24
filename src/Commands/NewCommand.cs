@@ -10,12 +10,13 @@ namespace Genyman.Core.Commands
 	{
 		protected NewCommand(bool fromCli)
 		{
+			FromCli = fromCli;
 			Name = "new";
 			Description = "Generates a confiration file for a generator";
 			JsonOption = Option("--json", "Output as json", CommandOptionType.NoValue, option => { }, false);
 			FileNameOption = Option<string>("--file", "Override filename for template (without extension)", CommandOptionType.SingleValue, option => { }, false);
 
-			if (fromCli)
+			if (FromCli)
 			{
 				SourceOption = Option<string>("--source", "Custom nuget server location for package", CommandOptionType.SingleValue, option => { }, false);
 				UpdateOption = Option("--update", "Perform update for package", CommandOptionType.NoValue, option => { }, false);
@@ -25,6 +26,7 @@ namespace Genyman.Core.Commands
 			}
 		}
 
+		internal bool FromCli { get; set; }
 
 		protected CommandOption JsonOption { get; set; }
 		protected CommandOption<string> FileNameOption { get; set; }
