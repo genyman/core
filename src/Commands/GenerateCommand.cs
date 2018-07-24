@@ -24,8 +24,8 @@ namespace Genyman.Core.Commands
 		}
 
 		CommandArgument<string> Input { get; }
-		internal CommandOption UpdateOption { get; set; }
-		internal bool FromCli { get; set; }
+		internal CommandOption UpdateOption { get; }
+		internal bool FromCli { get; }
 
 		protected override int Execute()
 		{
@@ -72,11 +72,11 @@ namespace Genyman.Core.Commands
 				Configuration = genyManConfiguration.Configuration,
 				WorkingDirectory = new FileInfo(fileName).DirectoryName,
 				Metadata = metaData,
-				Overwrite = Overwrite.HasValue()
+				Overwrite = Overwrite.HasValue(),
+				Update = UpdateOption.HasValue(),
+				
 			};
 			
-			
-
 			var sw = Stopwatch.StartNew();
 			Log.Information($"Executing {generator.Metadata.PackageId} - Version {version}");
 			generator.Execute();
