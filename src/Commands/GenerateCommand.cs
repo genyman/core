@@ -73,8 +73,7 @@ namespace Genyman.Core.Commands
 				WorkingDirectory = new FileInfo(fileName).DirectoryName,
 				Metadata = metaData,
 				Overwrite = Overwrite.HasValue(),
-				Update = UpdateOption.HasValue(),
-				
+				Update = UpdateOption?.HasValue() ?? false
 			};
 			
 			var sw = Stopwatch.StartNew();
