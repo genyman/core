@@ -12,9 +12,7 @@ namespace Genyman.Core.Helpers
 		Func<string, bool> _receiveOutput;
 		readonly string _processPath = "";
 		bool _isGenerator = false;
-		bool _useShellExecute = false;
-		string _pathEnvironmentVariable = null;
-
+		
 		ProcessRunner(string processPath)
 		{
 			_processPath = processPath;
@@ -40,18 +38,6 @@ namespace Genyman.Core.Helpers
 			return _processRunner;
 		}
 
-		public ProcessRunner WithUseShellExecute()
-		{
-			_useShellExecute = true;
-			return _processRunner;
-		}
-
-		public ProcessRunner WithPathEnvironmentVariable(string pathEnvironmentVariable)
-		{
-			_pathEnvironmentVariable = pathEnvironmentVariable;
-			return _processRunner;
-		}
-
 		public ProcessRunner ReceiveOutput(Func<string, bool> receiveOutput)
 		{
 			_receiveOutput = receiveOutput;
@@ -64,26 +50,15 @@ namespace Genyman.Core.Helpers
 
 			var processStartInfo = new ProcessStartInfo
 			{
-				UseShellExecute = _useShellExecute,
+				UseShellExecute = false,
 				FileName = _processPath,
 				Arguments = arguments,
 				RedirectStandardOutput = redirectOutput,
 				RedirectStandardError = redirectOutput,
 			};
 
-			if (!string.IsNullOrEmpty(_pathEnvironmentVariable))
-			{
-				if (processStartInfo.EnvironmentVariables.ContainsKey("PATH"))
-					processStartInfo.EnvironmentVariables["PATH"] = _pathEnvironmentVariable;
-				else
-					processStartInfo.EnvironmentVariables.Add("PATH", _pathEnvironmentVariable);
-			}
-
-			var pathVariable = processStartInfo.EnvironmentVariables.ContainsKey("PATH") ? processStartInfo.EnvironmentVariables["PATH"] : "No PATH environment variable found";
-
 			Log.Debug($"Executing {_processPath}");
 			Log.Debug($"Arguments: {arguments}");
-			Log.Debug($"Path: {pathVariable}");
 
 			var process = new Process
 			{
