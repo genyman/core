@@ -14,6 +14,11 @@ namespace Genyman.Core.Helpers
 			AddXamarinResource(csprojFolder, resourceFileName, "BundleResource");
 		}
 		
+		public static void AddXamarinIosImageAsset(this string csprojFolder, string resourceFileName)
+		{
+			AddXamarinResource(csprojFolder, resourceFileName, "ImageAsset");
+		}
+		
 		public static void AddXamarinAndroidResource(this string csprojFolder, string resourceFileName)
 		{
 			AddXamarinResource(csprojFolder, resourceFileName, "AndroidResource");
