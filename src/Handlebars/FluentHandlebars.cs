@@ -43,6 +43,12 @@ namespace Genyman.Core.Handlebars
 			_fluentInstance.WithCSharpHelpers();
 			return _fluentInstance;
 		}
+		
+		public FluentHandlebars WithCustomHelper(Action<HandlebarsDotNet.IHandlebars> customHelper)
+		{
+			customHelper.Invoke(_handlebars);
+			return _fluentInstance;
+		}
 
 		public FluentHandlebars UsingTemplate(string template)
 		{
@@ -91,7 +97,7 @@ namespace Genyman.Core.Handlebars
 			return template(_model);
 		}
 
-		public bool OutputFile(string fileName, bool overwrite = false)
+		public string OutputFile(string fileName, bool overwrite = false)
 		{
 			if (fileName.Contains("{{"))
 			{
@@ -116,16 +122,17 @@ namespace Genyman.Core.Handlebars
 			if (!overwrite && File.Exists(fileName))
 			{
 				Log.Warning($"Skipping {fileName} - File already exists");
-				return false;
+				return fileName;
 			}
 			try
 			{
 				File.WriteAllText(fileName, result, System.Text.Encoding.UTF8);
-				return true;
+				return fileName;
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
-				return false;
+				Log.Error(e.Message);
+				throw;
 			}
 		}
 	}

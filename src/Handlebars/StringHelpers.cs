@@ -90,7 +90,7 @@ namespace Genyman.Core.Handlebars
 			return result;
 		}
 
-		static string ToPascalCase(string value)
+		internal static string ToPascalCase(string value)
 		{
 			var parts = value.Split(' ');
 			var result = string.Empty;
