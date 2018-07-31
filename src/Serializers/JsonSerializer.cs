@@ -14,6 +14,7 @@ namespace Genyman.Core.Serializers
 		internal static string ToJsonString(this object config)
 		{
 			JsConfig.ExcludeTypeInfo = true;
+			JsConfig.ExcludeDefaultValues = true;
 			JsConfig.EmitCamelCaseNames = true;
 			JsConfig.IgnoreAttributesNamed = new[] {nameof(GenymanIgnoreAttribute)};
 			return config.ToJson().IndentJson();
