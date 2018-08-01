@@ -2,12 +2,16 @@
 using System.IO;
 using System.Reflection;
 using Genyman.Core.Handlebars;
-using Genyman.Core.Helpers;
 
 namespace Genyman.Core
 {
 	public abstract class GenymanGenerator<T> where T : class
 	{
+		protected GenymanGenerator()
+		{
+			TemplatePath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Templates");
+		}
+
 		public T Configuration { get; internal set; }
 
 		public GenymanMetadata ConfigurationMetadata { get; internal set; }
@@ -17,17 +21,12 @@ namespace Genyman.Core
 		public string InputFileName { get; internal set; }
 
 		public string WorkingDirectory { get; internal set; }
-		
-		public bool Overwrite { get; set; }
-		
-		internal bool Update { get; set; }
-		
-		protected string TemplatePath { get; }
 
-		protected GenymanGenerator()
-		{
-			TemplatePath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Templates");
-		}
+		public bool Overwrite { get; set; }
+
+		internal bool Update { get; set; }
+
+		protected string TemplatePath { get; }
 
 		public abstract void Execute();
 

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
 
-namespace Genyman.Core.Helpers
+// ReSharper disable once CheckNamespace
+namespace Genyman.Core
 {
-	public static class FileHelpers
+	public static class FileExtensions
 	{
 		public static string EnsureFolderExists(this string fileName)
 		{

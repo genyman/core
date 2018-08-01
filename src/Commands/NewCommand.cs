@@ -6,60 +6,29 @@ using McMaster.Extensions.CommandLineUtils;
 
 namespace Genyman.Core.Commands
 {
-	internal class NewCommand : BaseCommand
-	{
-		protected NewCommand(bool fromCli)
-		{
-			FromCli = fromCli;
-			Name = "new";
-			Description = "Generates a confiration file for a generator";
-			JsonOption = Option("--json", "Output as json", CommandOptionType.NoValue, option => { }, false);
-			FileNameOption = Option<string>("--file", "Override filename for template (without extension)", CommandOptionType.SingleValue, option => { }, false);
 
-			if (FromCli)
-			{
-				SourceOption = Option<string>("--source", "Custom nuget server location for package", CommandOptionType.SingleValue, option => { }, false);
-				UpdateOption = Option("--update", "Perform update for package", CommandOptionType.NoValue, option => { }, false);
-
-				PackageIdArgument = Argument<string>("packageId",
-					"Optionally specify a packageId for which you want a new configuration file; if ommitted configuration file for a new generator is created.", argument => { });
-			}
-		}
-
-		internal bool FromCli { get; set; }
-
-		protected CommandOption JsonOption { get; set; }
-		protected CommandOption<string> FileNameOption { get; set; }
-
-		protected CommandOption UpdateOption { get; set; }
-		protected CommandOption<string> SourceOption { get; set; }
-		protected CommandArgument<string> PackageIdArgument { get; set; }
-
-	}
-
-	internal class NewCommand<TConfiguration, TTemplate> : NewCommand
+	internal class NewCommand<TConfiguration, TTemplate> : BaseDispatchCommand
 		where TConfiguration : class
 		where TTemplate : TConfiguration, new()
 	{
 		internal Func<int> NewForPackageId { get; set; }
 
-		public NewCommand(bool fromCli) : base(fromCli)
+		public NewCommand(bool fromCli) : base(fromCli, "new", "Generates a confiration file for a generator")
 		{
+			FileNameOption = Option<string>("--file", "Override filename for template (without extension)", CommandOptionType.SingleValue, option => { }, false);
 		}
+
+		protected CommandOption<string> FileNameOption { get; set; }
 
 		protected override int Execute()
 		{
-			base.Execute();
-
-			if (NewForPackageId != null && !string.IsNullOrEmpty(PackageIdArgument.ParsedValue))
-			{
-				return NewForPackageId();
-			}
+			var baseResult = base.Execute();
+			if (baseResult != 0) return baseResult;
 
 			var metadata = new GenymanMetadata();
 			var version = GetVersion();
 
-			Log.Information($"Executing new command of {metadata.PackageId} - Version {version}");
+			Log.Information($"Executing new command for {metadata.PackageId} - Version {version}");
 
 			var sw = Stopwatch.StartNew();
 

@@ -16,7 +16,7 @@ namespace Genyman.Core.Serializers
 			JsConfig.ExcludeTypeInfo = true;
 			JsConfig.ExcludeDefaultValues = true;
 			JsConfig.EmitCamelCaseNames = true;
-			JsConfig.IgnoreAttributesNamed = new[] {nameof(GenymanIgnoreAttribute)};
+			JsConfig.IgnoreAttributesNamed = new[] {nameof(IgnoreAttribute)};
 			return config.ToJson().IndentJson();
 		}
 	}
