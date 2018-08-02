@@ -11,6 +11,7 @@ namespace Genyman.Core
 	public class DocumentationAttribute : Attribute
 	{
 		public string Remarks { get; set; }	
+		public string Source { get; set; }	
 	}
 
 	[AttributeUsage(AttributeTargets.Property)]

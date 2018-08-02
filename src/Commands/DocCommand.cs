@@ -14,7 +14,11 @@ namespace Genyman.Core.Commands
 	{
 		public DocCommand(bool fromCli) : base(fromCli, "doc", "Shows documentation for the configuration file")
 		{
+			MarkdownOption = Option<string>("--md", "Generates Markdown file for the given filename", CommandOptionType.SingleValue, option => { }, false);
 		}
+
+		protected CommandOption<string> MarkdownOption { get; set; }
+
 
 		protected override int Execute()
 		{
@@ -26,6 +30,43 @@ namespace Genyman.Core.Commands
 
 			Log.Information($"Executing doc command for {metadata.PackageId} - Version {version}");
 
+			var markdown = new List<string>();
+			var useMarkdown = MarkdownOption.HasValue();
+
+			if (useMarkdown)
+			{
+				markdown.Add($"# {metadata.PackageId}");
+				markdown.Add(metadata.Description);
+				markdown.Add("## Getting Started");
+				markdown.Add($"{metadata.PackageId} is a **[genyman](http://genyman.net)** code generator. If you haven't installed **genyman** run following command:");
+				markdown.Add($"```");
+				markdown.Add($"dotnet tool install -g genyman");
+				markdown.Add($"```");
+				markdown.Add($"_Genyman is a .NET Core Global tool and thereby you need .NET Core version 2.1 installed._");
+
+				markdown.Add("## New Configuration file ");
+				markdown.Add($"```");
+				if (metadata.Identifier == "Genyman")
+					markdown.Add($"genyman new");
+				else
+					markdown.Add($"genyman new {metadata.PackageId}");
+				markdown.Add($"```");
+
+				markdown.Add("## Sample Configuration file ");
+
+				var configuration = new GenymanConfiguration<TConfiguration>
+				{
+					Genyman = metadata,
+					Configuration = new TTemplate(),
+				};
+				var output = configuration.ToJsonString();
+				markdown.Add($"```");
+				markdown.Add(output);
+				markdown.Add($"```");
+
+				markdown.Add("## Documentation ");
+			}
+
 			var types = typeof(TConfiguration).Assembly.GetExportedTypes();
 			foreach (var type in types)
 			{
@@ -34,6 +75,8 @@ namespace Genyman.Core.Commands
 
 				if (type.IsClass)
 				{
+
+					
 					var output = new List<PropertyList>();
 
 					var properties = type.GetProperties();
@@ -69,6 +112,20 @@ namespace Genyman.Core.Commands
 					table.AddColumn("Req", p => p.Required);
 					table.AddColumn("Description", p => p.Description);
 					table.PrintRows(output, Console.WriteLine);
+					
+					if (useMarkdown)
+					{
+						markdown.Add($"### Class {type.Name}");
+						if(!string.IsNullOrEmpty(documentation.Remarks))
+							markdown.Add(documentation.Remarks);
+						
+						markdown.Add($"| Name | Type | Req | Description |");
+						markdown.Add($"| --- | --- | :---: | --- |");
+						foreach (var p in output)
+						{
+							markdown.Add($"| {p.Name} | {p.Type} | {p.Required} | {p.Description} |");
+						}
+					}
 				}
 				else if (type.IsEnum)
 				{
@@ -92,7 +149,28 @@ namespace Genyman.Core.Commands
 					table.AddColumn("Name", p => p.Name);
 					table.AddColumn("Description", p => p.Description);
 					table.PrintRows(output, Console.WriteLine);
+					
+					if (useMarkdown)
+					{
+						markdown.Add($"### Enum {type.Name}");
+						if(!string.IsNullOrEmpty(documentation.Remarks))
+							markdown.Add(documentation.Remarks);
+						
+						markdown.Add($"| Name | Description |");
+						markdown.Add($"| --- | --- |");
+						foreach (var p in output)
+						{
+							markdown.Add($"| {p.Name} | {p.Description} |");
+						}
+					}
 				}
+			}
+
+			if (useMarkdown)
+			{
+				var target = Path.Combine(WorkingDirectory, MarkdownOption.ParsedValue);
+				target.EnsureFolderExists();
+				File.WriteAllLines(target, markdown);
 			}
 
 			return 0;
@@ -111,6 +189,11 @@ namespace Genyman.Core.Commands
 			if (!string.IsNullOrEmpty(documentationAttribute?.Remarks))
 			{
 				Console.WriteLine(documentationAttribute.Remarks);
+				Console.WriteLine();
+			}
+			if (!string.IsNullOrEmpty(documentationAttribute?.Source))
+			{
+				Console.WriteLine($"Source: {documentationAttribute.Source}");
 				Console.WriteLine();
 			}
 		}

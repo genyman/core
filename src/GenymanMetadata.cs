@@ -9,11 +9,12 @@ namespace Genyman.Core
 		{
 			var calling = Assembly.GetEntryAssembly();
 			var assemblyName = calling.GetName();
-			Version = ""; // empty defaults to latest version
+			Version = null; // empty defaults to latest version
 			PackageId = assemblyName.Name;
-			NugetSource = ""; // empty defaults to standard nuget source
+			NugetSource = null; // empty defaults to standard nuget source
 
 			Description = calling.GetCustomAttribute<AssemblyDescriptionAttribute>()?.Description;
+
 		}
 
 		public string PackageId { get; set; }
