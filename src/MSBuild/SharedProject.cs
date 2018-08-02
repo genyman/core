@@ -13,8 +13,8 @@ namespace Genyman.Core.MSBuild
 		}
 
 		internal string ShProjFileName { get; set; }
-		
-		public override void Load()
+
+		protected override void Load()
 		{
 			if (Loaded) return;
 

@@ -46,7 +46,7 @@ namespace Genyman.Core.MSBuild
 			}
 		}
 
-		public virtual void Load()
+		protected virtual void Load()
 		{
 			if (Loaded) return;
 
@@ -101,6 +101,11 @@ namespace Genyman.Core.MSBuild
 			}
 		}
 
+		protected void Save()
+		{
+			File.WriteAllLines(FileName, _contents);
+		}
+
 		internal bool AddFile(string target, BuildAction buildAction, string dependentUpon = null, string customTool = null)
 		{
 			var resultPath = target.Replace(ProjectDirectory, "").Substring(1).ToMSBuildPath(); // remove first / in path
@@ -108,6 +113,7 @@ namespace Genyman.Core.MSBuild
 			{
 				resultPath = $"$(MSBuildThisFileDirectory){resultPath}";
 			}
+
 			if (!string.IsNullOrEmpty(dependentUpon))
 				dependentUpon = dependentUpon.Replace(ProjectDirectory, "").Substring(1).ToMSBuildPath();
 
@@ -215,6 +221,19 @@ namespace Genyman.Core.MSBuild
 			return string.Empty;
 		}
 
+		protected void SetProperty(string propertyName, string value)
+		{
+			for (var index = 0; index < _contents.Count; index++)
+			{
+				var line = _contents[index];
+				if (line.Contains($"<{propertyName}>"))
+				{
+					var currentValue = line.Substring(line.IndexOf(">") + 1, line.IndexOf("<", line.IndexOf(">") + 1) - line.IndexOf(">") - 1);
+					_contents[index] = line.Replace(currentValue, value);
+				}
+			}
+		}
+
 		internal string ProjectDirectory { get; set; }
 
 		public static Project Load(string projectFileName)
@@ -238,6 +257,26 @@ namespace Genyman.Core.MSBuild
 			}
 
 			return project;
+		}
+
+		internal void IncrementVersion(bool addMajor, bool addMinor, bool addBuild)
+		{
+			if (Type == ProjectType.DotNetCore)
+			{
+				var currentVersion = FindProperty("Version");
+				var versionInfo = new Version(currentVersion);
+				var major = versionInfo.Major + (addMajor ? 1 : 0);
+				var minor = versionInfo.Minor + (addMinor ? 1 : 0);
+				var build = versionInfo.Build + (addBuild ? 1 : 0);
+				versionInfo = new Version(major, minor, build);
+				SetProperty("Version", versionInfo.ToString());
+				Save();
+				Log.Debug($"Version {versionInfo} set into {FileName}");
+			}
+			else
+			{
+				Log.Warning("IncrementVersion for non .NET Core not implemented at the moment. PRs welcome.");
+			}
 		}
 
 		static Tuple<ProjectType, ProjectSubType> DetermineProjectType(string projectContents)

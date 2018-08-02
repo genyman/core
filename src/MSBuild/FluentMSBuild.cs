@@ -62,6 +62,13 @@ namespace Genyman.Core.MSBuild
 			return this;
 		}
 
+		public FluentMSBuild IncrementVersion(bool major, bool minor, bool build)
+		{
+			Project = Project.Load(FileName);
+			Project.IncrementVersion(major, minor, build);
+			return this;
+		}
+
 		bool AddFile(string target, BuildAction buildAction, string dependentUpon = null, string customTool = null)
 		{
 			if (!Project.Loaded && !SharedProject.Loaded) return false;
