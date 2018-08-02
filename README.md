@@ -4,4 +4,8 @@
 
 ### Work in progress
 
-Documentation will be added soon!
+Docs currently here:
+https://genyman.github.io/docs/
+
+But not production ready, not feature complete, and breaking changes between updates!
+Check back later, or STAR to follow up.
