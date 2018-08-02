@@ -7,7 +7,7 @@ namespace Genyman.Core
 	{
 		public static string FromEnvironmentOrDefault(this string value)
 		{
-			if (value.StartsWith("$")) return Environment.GetEnvironmentVariable(value);
+			if (value.StartsWith("$")) return Environment.GetEnvironmentVariable(value.Replace("$",""));
 			return value;
 		}
 	}
