@@ -126,7 +126,10 @@ namespace Genyman.Core.Handlebars
 			}
 			try
 			{
-				File.WriteAllText(fileName, result, System.Text.Encoding.UTF8);
+			    var directoryName = Path.GetDirectoryName(fileName);
+			    Directory.CreateDirectory(directoryName);
+
+			    File.WriteAllText(fileName, result, System.Text.Encoding.UTF8);
 				return fileName;
 			}
 			catch (Exception e)
