@@ -126,9 +126,7 @@ namespace Genyman.Core.Handlebars
 			}
 			try
 			{
-			    var directoryName = Path.GetDirectoryName(fileName);
-			    Directory.CreateDirectory(directoryName);
-
+				fileName.EnsureFolderExists();
 			    File.WriteAllText(fileName, result, System.Text.Encoding.UTF8);
 				return fileName;
 			}

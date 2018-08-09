@@ -11,9 +11,7 @@ namespace Genyman.Core
 			string path = null;
 			try
 			{
-				var fi = new FileInfo(fileName);
-				path = fi.DirectoryName;
-
+				path = Path.GetDirectoryName(fileName);
 				if (!Directory.Exists(path))
 					Directory.CreateDirectory(path);
 				return path;
