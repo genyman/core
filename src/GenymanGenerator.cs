@@ -36,7 +36,8 @@ namespace Genyman.Core
 			return result;
 		}
 
-		protected void ProcessHandlebarTemplates(Func<string, string> overrideTargetName = null)
+		protected void ProcessHandlebarTemplates(Func<string, bool> skipTemplate = null, Func<string, string> overrideTargetName = null,
+			Action<(string template, string output)> templateProcessed = null)
 		{
 			var folder = TemplatePath;
 			var templateFiles = Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories);
@@ -44,6 +45,16 @@ namespace Genyman.Core
 			{
 				var template = TargetFileName(templateFile, TemplatePath);
 				var targetName = template;
+
+				if (skipTemplate != null)
+				{
+					var skip = !skipTemplate.Invoke(template);
+					if (skip)
+					{
+						Log.Debug($"Skipping {template}");
+						continue;
+					}
+				}
 
 				if (overrideTargetName != null)
 				{
@@ -57,11 +68,13 @@ namespace Genyman.Core
 
 				targetPath.EnsureFolderExists();
 
-				FluentHandlebars.Create(this)
+				var output = FluentHandlebars.Create(this)
 					.WithAllHelpers()
 					.HavingModel(Configuration)
 					.UsingFileTemplate(templateFile)
 					.OutputFile(targetPath, Overwrite);
+
+				templateProcessed?.Invoke((template, output));
 			}
 		}
 	}
