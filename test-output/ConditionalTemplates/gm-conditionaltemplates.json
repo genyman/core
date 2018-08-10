@@ -1,0 +1,10 @@
+{
+    "genyman": {
+        "packageId": "Sample.Genyman.ConditionalTemplates",
+        "info": "This is a Genyman configuration file - https://genyman.github.io/docs/"
+    },
+    "configuration": {
+        "value1": "First Value",
+        "value2": "Second Value"
+    }
+}

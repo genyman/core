@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<IsPackable>true</IsPackable>
+		<PackAsTool>true</PackAsTool>
+		<TargetFramework>netcoreapp2.1</TargetFramework>
+		<AssemblyName>Sample.Genyman.ConditionalTemplates</AssemblyName>
+		<Version>1.0.0</Version>
+		<Description>Another great Genyman generator!</Description>
+		<PackageTags>Genyman</PackageTags>
+		<IncludeContentInPack>false</IncludeContentInPack>
+		<PackageIconUrl>https://raw.githubusercontent.com/genyman/genyman/master/graphics/genyman64.png</PackageIconUrl>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Genyman.Core" Version="0.*" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Templates\**" />
+		<Content Include="Templates\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Folder Include="Templates" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\src\Genyman.Core.csproj" />
+	</ItemGroup>
+</Project>
