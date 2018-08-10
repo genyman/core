@@ -37,7 +37,7 @@ namespace Genyman.Core
 		}
 
 		protected void ProcessHandlebarTemplates(Func<string, bool> skipTemplate = null, Func<string, string> overrideTargetName = null,
-			Action<(string template, string output)> templateProcessed = null)
+			Action<TemplateProcessed> templateProcessed = null)
 		{
 			var folder = TemplatePath;
 			var templateFiles = Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories);
@@ -48,7 +48,7 @@ namespace Genyman.Core
 
 				if (skipTemplate != null)
 				{
-					var skip = !skipTemplate.Invoke(template);
+					var skip = skipTemplate.Invoke(template);
 					if (skip)
 					{
 						Log.Debug($"Skipping {template}");
@@ -74,8 +74,20 @@ namespace Genyman.Core
 					.UsingFileTemplate(templateFile)
 					.OutputFile(targetPath, Overwrite);
 
-				templateProcessed?.Invoke((template, output));
+				templateProcessed?.Invoke(new TemplateProcessed(template, output));
 			}
 		}
+	}
+
+	public class TemplateProcessed
+	{
+		public TemplateProcessed(string template, string file)
+		{
+			Template = template;
+			File = file;
+		}
+
+		public string Template { get; }
+		public string File { get; }
 	}
 }
