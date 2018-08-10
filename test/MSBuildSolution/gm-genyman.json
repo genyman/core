@@ -1,0 +1,11 @@
+{
+    "genyman": {
+        "packageId": "Genyman",
+        "info": "This is a Genyman configuration file - https://genyman.github.io/docs/"
+    },
+    "configuration": {
+        "prefix": "Sample",
+        "toolName": "MSBuildSolution",
+        "description": "Another great Genyman generator!"
+    }
+}

@@ -1,0 +1,23 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSBuildSolution", "Sample.Genyman.MSBuildSolution.csproj", "{79D1913F-C1EB-4E1F-99B3-EA1557D0ABBA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Genyman.Core", "..\..\..\src\Genyman.Core.csproj", "{813F0F66-BACE-44C8-8CE8-E2E4B029F6C8}"
+EndProject
+
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{79D1913F-C1EB-4E1F-99B3-EA1557D0ABBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79D1913F-C1EB-4E1F-99B3-EA1557D0ABBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79D1913F-C1EB-4E1F-99B3-EA1557D0ABBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79D1913F-C1EB-4E1F-99B3-EA1557D0ABBA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{813F0F66-BACE-44C8-8CE8-E2E4B029F6C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{813F0F66-BACE-44C8-8CE8-E2E4B029F6C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{813F0F66-BACE-44C8-8CE8-E2E4B029F6C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{813F0F66-BACE-44C8-8CE8-E2E4B029F6C8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

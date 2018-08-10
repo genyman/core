@@ -1,0 +1,10 @@
+{
+    "genyman": {
+        "packageId": "Sample.Genyman.MSBuildSolution",
+        "info": "This is a Genyman configuration file - https://genyman.github.io/docs/"
+    },
+    "configuration": {
+        "useAndroid": true,
+        "useIOS": false
+    }
+}
