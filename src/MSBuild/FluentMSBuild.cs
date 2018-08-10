@@ -9,10 +9,28 @@ namespace Genyman.Core.MSBuild
 		string DependencyOn { get; set; }
 		string CustomTool { get; set; }
 
-		public Solution Solution { get; private set; }
-		public Project Project { get; private set; }
-		public SharedProject SharedProject { get; private set; }
+		Solution _solution;
+		Project _project;
+		SharedProject _sharedProject;
 
+		public Solution Solution
+		{
+			get => _solution ?? (_solution = Solution.LoadFromFile(FileName));
+			private set => _solution = value;
+		}
+				
+		public Project Project
+		{
+			get => _project ?? (_project = Project.LoadFromFile(FileName));
+			private set => _project = value;
+		}
+		
+		public SharedProject SharedProject
+		{
+			get => _sharedProject ?? (_sharedProject = SharedProject.LoadFromFile(FileName));
+			private set => _sharedProject = value;
+		}
+		
 		FluentMSBuild()
 		{
 		}
@@ -53,18 +71,12 @@ namespace Genyman.Core.MSBuild
 		public FluentMSBuild AddToProject()
 		{
 			var fileInfo = new FileInfo(FileName);
-
-			Solution = Solution.LoadFromFile(FileName);
-			Project = Project.LoadFromFile(FileName);
-			SharedProject = SharedProject.LoadFromFile(FileName);
-
 			AddFile(fileInfo.FullName, BuildAction, DependencyOn, CustomTool);
 			return this;
 		}
 
 		public FluentMSBuild IncrementVersion(bool major, bool minor, bool build)
 		{
-			Project = Project.Load(FileName);
 			Project.IncrementVersion(major, minor, build);
 			return this;
 		}

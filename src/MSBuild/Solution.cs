@@ -10,6 +10,8 @@ namespace Genyman.Core.MSBuild
 		// https://sourceforge.net/projects/syncproj/
 
 		private string _fileName;
+		protected List<string> Contents { get; set; }
+
 
 		internal Solution()
 		{
@@ -40,37 +42,64 @@ namespace Genyman.Core.MSBuild
 				solution.Name = fileInfo.Name.Replace(fileInfo.Extension, "");
 				solution.FileName = fileInfo.FullName;
 
-				var contents = File.ReadAllLines(solutionFileName);
-				if (!contents.Contains("Project") && !contents.Contains("EndProject"))
+				solution.Contents = File.ReadAllLines(solutionFileName).ToList();
+				if (!solution.Contents.Contains("Project") && !solution.Contents.Contains("EndProject"))
 					throw new Exception("Not a valid solution file");
 
 				string line;
 				var lineIndex = 0;
 				do
 				{
-					line = contents[lineIndex];
+					line = solution.Contents[lineIndex];
 					if (line.StartsWith("Project"))
 					{
 						var parts = line.Split('=', ',');
 						var projectFileName = Path.Combine(fileInfo.DirectoryName, parts[2].Replace("\"", "").Trim()).ToPlatformPath();
 						if (projectFileName.EndsWith("csproj", StringComparison.OrdinalIgnoreCase))
 						{
-							solution.Projects.Add(new Project() {FileName = projectFileName});
+							var project = Project.Load(projectFileName);
+							if (project.NotFound) project.Id = parts.Last().Replace("\"", "").Trim(); // if not found, still add the ID here
+							solution.Projects.Add(project);
 						}
 						else if (projectFileName.EndsWith("shproj", StringComparison.OrdinalIgnoreCase))
 						{
-							solution.SharedProjects.Add(new SharedProject() {FileName = projectFileName});
+							var project = SharedProject.Load(projectFileName);
+							if (project.NotFound) project.Id = parts.Last().Replace("\"", "").Trim(); // if not found, still add the ID here
+							solution.SharedProjects.Add(project);
 						}
 					}
+
 					lineIndex++;
-				} while (line != "EndProject");
+				} while (line != "Global");
+
 				solution.Loaded = true;
 			}
 			catch (Exception e)
 			{
 				solution.Exception = e;
 			}
+
 			return solution;
+		}
+
+		public void Remove(Project project)
+		{
+			Log.Debug($"Removing {project.Id} {project.FileName} from Solution");
+
+			var startProjectIndex = Contents.FindIndex(q => q.EndsWith($"{project.Id}\""));
+			Contents.RemoveAt(startProjectIndex);
+			Contents.RemoveAt(startProjectIndex); // = EndProject
+
+			var startProjectConfigIndex = Contents.FindIndex(q => q.Trim().StartsWith(project.Id));
+			if (startProjectConfigIndex != -1)
+			{
+				do
+				{
+					Contents.RemoveAt(startProjectConfigIndex);
+				} while (Contents[startProjectConfigIndex].Trim().StartsWith(project.Id));
+			}
+
+			File.WriteAllLines(FileName, Contents);
 		}
 
 		internal static Solution LoadFromFile(string fileName)
@@ -85,6 +114,7 @@ namespace Genyman.Core.MSBuild
 			{
 				solution.Exception = e;
 			}
+
 			return solution;
 		}
 	}

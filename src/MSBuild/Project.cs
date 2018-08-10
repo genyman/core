@@ -33,7 +33,9 @@ namespace Genyman.Core.MSBuild
 		public string AssemblyName { get; internal set; }
 		public string RootNamespace { get; internal set; }
 		public string OutputType { get; internal set; }
+		public string Id { get; internal set; }
 		protected bool IsSharedProject { get; set; }
+		public bool NotFound { get; internal set; }
 
 		public Solution Solution
 		{
@@ -73,6 +75,7 @@ namespace Genyman.Core.MSBuild
 				if (Type == ProjectType.DotNet)
 				{
 					TargetFramework = FindProperty("TargetFrameworkVersion");
+					Id = FindProperty("ProjectGuid");
 
 					if (SubType == ProjectSubType.XamarinAndroid)
 					{
@@ -98,6 +101,7 @@ namespace Genyman.Core.MSBuild
 			catch (Exception e)
 			{
 				Exception = e;
+				NotFound = true;
 			}
 		}
 
