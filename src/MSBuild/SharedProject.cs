@@ -41,10 +41,11 @@ namespace Genyman.Core.MSBuild
 			}
 		}
 
-		internal new static SharedProject Load(string projectFileName)
+		internal new static SharedProject Load(string projectFileName, string solutionIdentifier = null)
 		{
 			var sharedProject = new SharedProject {FileName = projectFileName};
 			sharedProject.Load();
+			sharedProject.SolutionIdentifier = solutionIdentifier;
 			return sharedProject;
 		}
 

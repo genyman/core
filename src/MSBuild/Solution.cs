@@ -57,13 +57,13 @@ namespace Genyman.Core.MSBuild
 						var projectFileName = Path.Combine(fileInfo.DirectoryName, parts[2].Replace("\"", "").Trim()).ToPlatformPath();
 						if (projectFileName.EndsWith("csproj", StringComparison.OrdinalIgnoreCase))
 						{
-							var project = Project.Load(projectFileName);
+							var project = Project.Load(projectFileName, parts[1].Replace("\"", "").Trim());
 							if (project.NotFound) project.Id = parts.Last().Replace("\"", "").Trim(); // if not found, still add the ID here
 							solution.Projects.Add(project);
 						}
 						else if (projectFileName.EndsWith("shproj", StringComparison.OrdinalIgnoreCase))
 						{
-							var project = SharedProject.Load(projectFileName);
+							var project = SharedProject.Load(projectFileName, parts[1].Replace("\"", "").Trim());
 							if (project.NotFound) project.Id = parts.Last().Replace("\"", "").Trim(); // if not found, still add the ID here
 							solution.SharedProjects.Add(project);
 						}
@@ -99,6 +99,31 @@ namespace Genyman.Core.MSBuild
 				} while (Contents[startProjectConfigIndex].Trim().StartsWith(project.Id));
 			}
 
+			File.WriteAllLines(FileName, Contents);
+		}
+
+		public void Remove(ProjectSubType projectSubType)
+		{
+			var projects = Projects.Where(q => q.SubType == projectSubType);
+			foreach (var project in projects)
+			{
+				Remove(project);
+			}
+		}
+
+		public void RemoveConfigurations(ProjectSubType projectSubType)
+		{
+			// at the moment we just clean up iOS configurations
+			if (projectSubType != ProjectSubType.XamarinIOS)
+			{
+				Log.Debug($"No configuration clean up in this solution supported for {projectSubType}");
+				return;
+			}
+
+			// iOS
+			var toRemove = new List<string>() {"Debug|iPhoneSimulator", "Release|iPhoneSimulator", "Debug|iPhone", "Release|iPhone", "Ad-Hoc|iPhone", "AppStore|iPhone"};
+			foreach (var remove in toRemove)
+				Contents.RemoveAll(s => s.Contains(remove));
 			File.WriteAllLines(FileName, Contents);
 		}
 

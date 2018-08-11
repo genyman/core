@@ -17,20 +17,23 @@ namespace Sample.Genyman.MSBuildSolution.Implementation
 		{
 			if (obj.Template.EndsWith("XamarinApp.sln"))
 			{
+				// we have to check based upon the SolutionIdentifier because when this file is processed the projects itself are not copied yet (or are skipped)
+				// therefore they will be marked as NotFound, and not able to identity the type; solutionIdentifier can always be used
+				
 				var solution = FluentMSBuild.Use(obj.File).Solution;
 				if (!Configuration.UseIOS)
 				{
-					var projects = solution.Projects.Where(q => q.SubType == ProjectSubType.XamarinIOS || q.NotFound);
+					var projects = solution.Projects.Where(q => q.SolutionIdentifier == "XamarinApp.iOS");
 					RemoveProjects(projects, solution);
+					solution.RemoveConfigurations(ProjectSubType.XamarinIOS);
 				}
 
 				if (!Configuration.UseAndroid)
 				{
-					var projects = solution.Projects.Where(q => q.SubType == ProjectSubType.XamarinAndroid || q.NotFound);
+					var projects = solution.Projects.Where(q => q.SolutionIdentifier == "XamarinApp.Android");
 					RemoveProjects(projects, solution);
 				}
 				
-				// note: Because we are Skipping all files, including the csproj file, the above code can be simplified; you only have to check on NotFound property
 			}
 
 			void RemoveProjects(IEnumerable<Project> projects, Solution solution)

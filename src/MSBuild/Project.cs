@@ -36,6 +36,7 @@ namespace Genyman.Core.MSBuild
 		public string Id { get; internal set; }
 		protected bool IsSharedProject { get; set; }
 		public bool NotFound { get; internal set; }
+		public string SolutionIdentifier { get; internal set; }
 
 		public Solution Solution
 		{
@@ -240,10 +241,11 @@ namespace Genyman.Core.MSBuild
 
 		internal string ProjectDirectory { get; set; }
 
-		public static Project Load(string projectFileName)
+		public static Project Load(string projectFileName, string solutionIdentifier = null)
 		{
 			var project = new Project {FileName = projectFileName};
 			project.Load();
+			project.SolutionIdentifier = solutionIdentifier;
 			return project;
 		}
 
