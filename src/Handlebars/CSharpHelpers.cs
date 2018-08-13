@@ -13,6 +13,13 @@ namespace Genyman.Core.Handlebars
 				var variable = parameters[0].ToString().Split('.').Last();
 				writer.WriteSafeString(ToMemberVariable(variable));
 			});
+			
+			handlebars.RegisterHelper("csharp-property", (writer, context, parameters) =>
+			{
+				if (!parameters.MustBeString()) return;
+				var variable = parameters[0].ToString().Split('.').Last();
+				writer.WriteSafeString(StringHelpers.ToPascalCase(variable));
+			});
 
 			handlebars.RegisterHelper("csharp-var", (writer, context, parameters) =>
 			{
